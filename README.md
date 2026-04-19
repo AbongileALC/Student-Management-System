@@ -1,40 +1,126 @@
+# 🎓 Student Enrollment System
+A Java Swing desktop application for managing student course enrollments with role-based access control.
 
-# Student Management System
+## Screenshots
+| Login Page | Admin Dashboard | Student Enrollment |
+|---|---|---|
+| *(add screenshot)* | *(add screenshot)* | *(add screenshot)* |
 
-A Java application demonstrating the Builder Design Pattern, 
-Inheritance, Polymorphism, and SOLID principles.
+## Features
 
-## How to Run
-1. Clone the repository
-2. Open in NetBeans
-3. Run `MainRun.java`
+**Admin Access**
+- Add and manage students (student number, name, email, password)
+- Add and manage courses (course code, title)
+- Full control via tabbed Admin Dashboard
+
+**Student Access**
+- Log in with student credentials
+- Load personal info by student number
+- Enroll in available courses
+- Duplicate enrollment prevention
+
+## Technologies Used
+| Technology | Version |
+|---|---|
+| Java (JDK) | 17 |
+| Java Swing | Built-in |
+| Apache Derby | 10.16.1.1 |
+| Maven | Bundled with NetBeans |
+| NetBeans | 25 (recommended) |
 
 ## Project Structure
-- `Student.java` - Abstract base class
-- `Undergraduate.java` - Undergraduate student with Builder
-- `Graduate.java` - Graduate student with Builder
-- `MainRun.java` - Main class, creates and displays students
+```
+src/main/java/za/ac/cput/studentenrollmentapp/
+│
+├── gui/
+│   ├── Welcome.java
+│   ├── AdminPage.java
+│   └── StudentPage.java
+│
+├── domain/
+│   ├── Student.java
+│   ├── Course.java
+│   ├── Enrollment.java
+│   └── Login.java
+│
+├── dao/
+│   ├── StudentDAO.java
+│   ├── CourseDAO.java
+│   ├── EnrollmentDAO.java
+│   └── LoginDAO.java
+│
+└── connection/
+    └── DBConnection.java
+```
 
-## SOLID Principles Applied
+## How to Run (NetBeans)
+1. Open the project in NetBeans 25
+2. Start the Apache Derby network server on localhost port 1527
+3. Right-click the project in the Projects panel
+4. Select **Run** or press F6
+5. The login window will appear
 
-### 1. Single Responsibility Principle (SRP)
-Each class has one job and one reason to change.
-- `Student.java` is only responsible for holding shared 
-  student data.
-- `Undergraduate.Builder` is only responsible for 
-  constructing an `UndergraduateStudent` object.
-- `Graduate.Builder` is only responsible for 
-  constructing a `GraduateStudent` object.
-This means if tuition calculation changes, only 
-`calculateTuition()` is affected. If construction logic 
-changes, only the Builder is affected.
+## How to Run (Terminal)
+From the project root directory:
+```
+mvn clean package
+java -jar target/studentenrollmentapp.jar
+```
 
-### 2. Open/Closed Principle (OCP)
-Classes should be open for extension but closed for modification.
-- `Student.java` is closed for modification — we never 
-  change it when adding new student types.
-- When we added `Graduate`, we simply extended 
-  `Student` without touching any existing code.
-- If a `PartTimeStudent` needs to be added in future, 
-  we create a new class extending `Student` — again 
-  without modifying any existing classes.
+## Database Setup
+The app connects to a Derby network database called `StudentEnrollmentDB`.
+
+Connection details:
+- **URL:** `jdbc:derby://localhost:1527/StudentEnrollmentDB`
+- **Username:** Administrator
+- **Password:** password
+
+The following tables are required:
+
+```sql
+CREATE TABLE Login (
+    email VARCHAR(100) PRIMARY KEY,
+    password VARCHAR(100),
+    role VARCHAR(20)
+);
+
+CREATE TABLE Student (
+    student_number VARCHAR(20) PRIMARY KEY,
+    student_name VARCHAR(100),
+    email VARCHAR(100),
+    password VARCHAR(100),
+    role VARCHAR(20)
+);
+
+CREATE TABLE Course (
+    course_code VARCHAR(20) PRIMARY KEY,
+    title VARCHAR(100)
+);
+
+CREATE TABLE Enrollment (
+    student_number VARCHAR(20),
+    name VARCHAR(100),
+    course VARCHAR(100)
+);
+```
+
+## User Roles
+| Role | Access |
+|---|---|
+| Admin | Add students, add courses, manage system |
+| Student | View own info, enroll in courses |
+
+## How It Works
+1. Launch the app — the Login screen appears
+2. Enter email and password
+3. System checks role — Admin opens Admin Dashboard, Student opens Student Page
+4. Admin can add courses and register new students via tabbed interface
+5. Students enter their student number to load their info, then select and enroll in a course
+6. Duplicate enrollments are automatically prevented
+
+## My Role
+Implemented the `EnrollmentDAO` and `CourseDAO` — full CRUD operations including duplicate enrollment prevention, transaction management, and database rollback handling.
+
+## Contributors
+- Athini Ngquke — System architecture, GUI, Login & Student DAO
+- Abongile Phandle — Enrollment DAO, Course DAO, database integration
